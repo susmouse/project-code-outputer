@@ -3,6 +3,46 @@
 实现主要的用户界面和交互逻辑
 """
 
+# 黑名单，排除这些文件和目录
+BLACK_LIST = [
+    "__pycache__",
+    ".git",
+    ".gitignore",
+    "*.o",
+    "*.a",
+    "*.so",
+    "*.dylib",
+    "*.dll",
+    "build",
+    ".idea",
+    ".vscode",
+    ".vs",
+    "*.user",
+    "*.suo",
+    "*.iml",
+    "*.swp",
+    "*.bak",
+    "dist",
+    "node_modules",
+    "target",
+    "out",
+    "*.egg-info",
+    "*.egg",
+    "*.pyd",
+    ".hg",
+    ".svn",
+    ".DS_Store",
+    "Thumbs.db",
+    ".cache",
+    ".pytest_cache",
+    "coverage",
+    ".mypy_cache",
+    ".tox",
+    ".vagrant",
+    "*.log",
+    "*.tmp",
+]
+
 from pathlib import Path
 from PyQt5.QtWidgets import (
     QMainWindow,
@@ -266,13 +306,18 @@ class FileMergeApp(QMainWindow):
         return files
 
     def get_all_files(self, item):
-        """获取项目中的所有文件列表"""
+        """获取项目中的所有文件列表，排除黑名单中的文件和目录"""
         files = []
-        if item.path.is_file():
+        if item.path.is_file() and not any(
+            item.path.match(pattern) for pattern in BLACK_LIST
+        ):
             files.append(item.path)
-        for i in range(item.childCount()):
-            child = item.child(i)
-            files.extend(self.get_all_files(child))
+        elif item.path.is_dir() and not any(
+            item.path.match(pattern) for pattern in BLACK_LIST
+        ):
+            for i in range(item.childCount()):
+                child = item.child(i)
+                files.extend(self.get_all_files(child))
         return files
 
     def preview_selected_files(self):
@@ -280,12 +325,12 @@ class FileMergeApp(QMainWindow):
         if not self.file_tree.topLevelItem(0):
             self.alert("提示", "没有选择项目根目录。")
             return
-        
+
         # 获取所有文件用于生成完整的文件树
         root_item = self.file_tree.topLevelItem(0)
         all_files = self.get_all_files(root_item)
         selected_files = self.get_selected_files(root_item)
-        
+
         if not selected_files:
             self.alert("提示", "没有选择任何文件。")
             return
@@ -294,7 +339,7 @@ class FileMergeApp(QMainWindow):
         # 使用所有文件生成完整的文件树结构
         complete_file_structure = generate_file_structure(all_files, root_path)
         structure_output = print_tree_structure(complete_file_structure)
-        
+
         # 只为选中的文件生成内容
         selected_file_structure = generate_file_structure(selected_files, root_path)
         content_output = generate_files_content(selected_file_structure, root_path)
