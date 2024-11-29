@@ -8,7 +8,7 @@ import json
 
 EXTENSION_MAPPING = {}
 try:
-    with open("./config.jsonc", "r", encoding="utf-8") as config_file:
+    with open("./config.json", "r", encoding="utf-8") as config_file:
         EXTENSION_MAPPING = json.load(config_file).get("extension_mapping", {})
 except (FileNotFoundError, json.JSONDecodeError) as e:
     print(f"Error loading config: {e}")

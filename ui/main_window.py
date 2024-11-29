@@ -8,7 +8,7 @@ import json
 # 文件树黑名单（控制完整输出文件树时，不显示在文件树的文件）
 BLACK_LIST = []
 try:
-    with open("./config.jsonc", "r", encoding="utf-8") as config_file:
+    with open("./config.json", "r", encoding="utf-8") as config_file:
         BLACK_LIST = json.load(config_file).get("black_list", [])
 except (FileNotFoundError, json.JSONDecodeError) as e:
     print(f"Error loading config: {e}")
