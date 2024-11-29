@@ -3,45 +3,16 @@
 实现主要的用户界面和交互逻辑
 """
 
-# 黑名单，排除这些文件和目录
-BLACK_LIST = [
-    "__pycache__",
-    ".git",
-    ".gitignore",
-    "*.o",
-    "*.a",
-    "*.so",
-    "*.dylib",
-    "*.dll",
-    "build",
-    ".idea",
-    ".vscode",
-    ".vs",
-    "*.user",
-    "*.suo",
-    "*.iml",
-    "*.swp",
-    "*.bak",
-    "dist",
-    "node_modules",
-    "target",
-    "out",
-    "*.egg-info",
-    "*.egg",
-    "*.pyd",
-    ".hg",
-    ".svn",
-    ".DS_Store",
-    "Thumbs.db",
-    ".cache",
-    ".pytest_cache",
-    "coverage",
-    ".mypy_cache",
-    ".tox",
-    ".vagrant",
-    "*.log",
-    "*.tmp",
-]
+import json
+
+# 文件树黑名单（控制完整输出文件树时，不显示在文件树的文件）
+BLACK_LIST = []
+try:
+    with open("./config.jsonc", "r", encoding="utf-8") as config_file:
+        BLACK_LIST = json.load(config_file).get("black_list", [])
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    print(f"Error loading config: {e}")
+    BLACK_LIST = []
 
 from pathlib import Path
 from PyQt5.QtWidgets import (
@@ -103,13 +74,13 @@ class FileMergeApp(QMainWindow):
 
         self.project_label = QLabel("未选择项目根目录")
         button_layout.addWidget(self.project_label)
-        
+
         # 添加显示完整树的复选框
         self.complete_tree_checkbox = QCheckBox("显示完整文件树", self)
         self.complete_tree_checkbox.setChecked(self.show_complete_tree)
         self.complete_tree_checkbox.stateChanged.connect(self.toggle_tree_mode)
         button_layout.addWidget(self.complete_tree_checkbox)
-        
+
         layout.addLayout(button_layout)
 
     def setup_file_tree_and_preview(self, layout):
@@ -225,8 +196,8 @@ class FileMergeApp(QMainWindow):
     def toggle_tree_mode(self, state):
         """切换文件树显示模式"""
         self.show_complete_tree = bool(state)
-        if self.file_tree.topLevelItem(0):
-            self.preview_selected_files()
+        # if self.file_tree.topLevelItem(0):
+        #     self.preview_selected_files()
 
     def preview_selected_files(self):
         """预览选中的文件"""
@@ -237,13 +208,13 @@ class FileMergeApp(QMainWindow):
         # 获取根目录项
         root_item = self.file_tree.topLevelItem(0)
         root_path = root_item.path
-        
+
         # 根据开关状态决定使用哪种方式获取文件
         if self.show_complete_tree:
             files_for_structure = self.get_all_files(root_item)
         else:
             files_for_structure = self.get_selected_files(root_item)
-            
+
         if not files_for_structure:
             self.alert("提示", "没有选择任何文件。")
             return

@@ -4,6 +4,15 @@
 """
 
 from pathlib import Path
+import json
+
+EXTENSION_MAPPING = {}
+try:
+    with open("./config.jsonc", "r", encoding="utf-8") as config_file:
+        EXTENSION_MAPPING = json.load(config_file).get("extension_mapping", {})
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    print(f"Error loading config: {e}")
+    EXTENSION_MAPPING = {}
 
 
 def get_language_by_extension(extension):
@@ -16,25 +25,7 @@ def get_language_by_extension(extension):
     返回:
         str: 语言标识符
     """
-    extension_mapping = {
-        ".py": "python",
-        ".md": "markdown",
-        ".js": "javascript",
-        ".ts": "typescript",
-        ".h": "c",
-        ".hpp": "cpp",
-        ".cs": "csharp",
-        ".rb": "ruby",
-        ".sh": "bash",
-        ".yml": "yaml",
-        ".rs": "rust",
-        ".kt": "kotlin",
-        ".pl": "perl",
-        ".rake": "ruby",
-        ".feature": "gherkin",
-        ".txt": "plaintext",
-    }
-    type = extension_mapping.get(extension, "")
+    type = EXTENSION_MAPPING.get(extension, "")
     # 未找到匹配的扩展名，使用扩展名本身
     if not type:
         type = extension.lstrip(".")
