@@ -21,6 +21,18 @@ def get_language_by_extension(extension):
         ".md": "markdown",
         ".js": "javascript",
         ".ts": "typescript",
+        ".h": "c",
+        ".hpp": "cpp",
+        ".cs": "csharp",
+        ".rb": "ruby",
+        ".sh": "bash",
+        ".yml": "yaml",
+        ".rs": "rust",
+        ".kt": "kotlin",
+        ".pl": "perl",
+        ".rake": "ruby",
+        ".feature": "gherkin",
+        ".txt": "plaintext",
     }
     type = extension_mapping.get(extension, "")
     # 未找到匹配的扩展名，使用扩展名本身
