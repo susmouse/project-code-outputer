@@ -20,17 +20,10 @@ def get_language_by_extension(extension):
         ".py": "python",
         ".md": "markdown",
         ".js": "javascript",
-        ".html": "html",
-        ".css": "css",
-        ".java": "java",
-        ".cpp": "cpp",
-        ".c": "c",
-        ".json": "json",
-        ".xml": "xml",
-        ".yaml": "yaml",
-        ".sql": "sql",
+        ".ts": "typescript",
     }
     type = extension_mapping.get(extension, "")
+    # 未找到匹配的扩展名，使用扩展名本身
     if not type:
         type = extension.lstrip(".")
     return type
