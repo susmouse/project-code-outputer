@@ -1,0 +1,111 @@
+QMainWindow {
+  background-color: #f5f6fa;
+}
+
+QPushButton {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  font-size: 14px;
+  font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+  border-radius: 4px;
+  min-width: 100px;
+  margin: 4px;
+  transition: background-color 0.3s;
+}
+
+QPushButton:hover {
+  background-color: #357abd;
+}
+
+QPushButton:pressed {
+  background-color: #2d6da3;
+}
+
+QLabel {
+  font-size: 14px;
+  color: #2c3e50;
+  font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+  padding: 5px;
+}
+
+QTreeWidget {
+  background-color: white;
+  border: 1px solid #e1e1e1;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+  selection-background-color: #e8f0fe;
+  selection-color: #2c3e50;
+}
+
+QTreeWidget::item {
+  padding: 5px;
+  border-radius: 4px;
+}
+
+QTreeWidget::item:hover {
+  background-color: #f8f9fa;
+}
+
+QTreeWidget::item:selected {
+  background-color: #e8f0fe;
+  color: #2c3e50;
+}
+
+QTextEdit {
+  background-color: white;
+  border: 1px solid #e1e1e1;
+  border-radius: 6px;
+  padding: 15px;
+  font-family: "Consolas", "Source Code Pro", monospace;
+  font-size: 14px;
+  color: #2c3e50;
+  selection-background-color: #4a90e2;
+  selection-color: white;
+}
+
+QScrollBar:vertical {
+  border: none;
+  background-color: #f5f6fa;
+  width: 10px;
+  margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+  background-color: #c1c1c1;
+  border-radius: 5px;
+  min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+  background-color: #a8a8a8;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+  height: 0px;
+}
+
+QScrollBar:horizontal {
+  border: none;
+  background-color: #f5f6fa;
+  height: 10px;
+  margin: 0px;
+}
+
+QScrollBar::handle:horizontal {
+  background-color: #c1c1c1;
+  border-radius: 5px;
+  min-width: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+  background-color: #a8a8a8;
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+  width: 0px;
+}
