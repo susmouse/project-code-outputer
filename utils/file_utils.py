@@ -94,7 +94,7 @@ def generate_files_content(tree, root_path, path=""):
             content += generate_files_content(value, root_path, new_path)
         else:
             relative_path = Path(value).relative_to(root_path)
-            content += f"**.\\{relative_path}**\n\n"
+            content += f"下面是 **.\\{relative_path}** 文件的内容：\n\n"
             extension = value.suffix.lower()
             language = get_language_by_extension(extension)
             content += f"```{language}\n"
@@ -103,6 +103,6 @@ def generate_files_content(tree, root_path, path=""):
                     file_content = f.read()
                 content += file_content
             except UnicodeDecodeError:
-                content += "（无法读取文件内容 - 可能是二进制文件）"
-            content += "\n```\n\n\n---\n\n"
+                content += "（无法读取该文件内容 - 可能是二进制文件）"
+            content += "\n```\n\n---\n\n"
     return content
