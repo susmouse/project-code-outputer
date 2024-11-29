@@ -56,6 +56,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QLabel,
     QMessageBox,
+    QCheckBox,
 )
 from PyQt5.QtCore import Qt
 
@@ -78,6 +79,7 @@ class FileMergeApp(QMainWindow):
         super().__init__()
         self.setWindowTitle("项目文件输出工具")
         self.setGeometry(100, 100, 1000, 800)
+        self.show_complete_tree = False  # 添加开关状态变量
         self.initUI()
 
     def initUI(self):
@@ -101,6 +103,13 @@ class FileMergeApp(QMainWindow):
 
         self.project_label = QLabel("未选择项目根目录")
         button_layout.addWidget(self.project_label)
+        
+        # 添加显示完整树的复选框
+        self.complete_tree_checkbox = QCheckBox("显示完整文件树", self)
+        self.complete_tree_checkbox.setChecked(self.show_complete_tree)
+        self.complete_tree_checkbox.stateChanged.connect(self.toggle_tree_mode)
+        button_layout.addWidget(self.complete_tree_checkbox)
+        
         layout.addLayout(button_layout)
 
     def setup_file_tree_and_preview(self, layout):
@@ -213,27 +222,38 @@ class FileMergeApp(QMainWindow):
                 files.extend(self.get_all_files(child))
         return files
 
+    def toggle_tree_mode(self, state):
+        """切换文件树显示模式"""
+        self.show_complete_tree = bool(state)
+        if self.file_tree.topLevelItem(0):
+            self.preview_selected_files()
+
     def preview_selected_files(self):
         """预览选中的文件"""
         if not self.file_tree.topLevelItem(0):
             self.alert("提示", "没有选择项目根目录。")
             return
 
-        # 获取所有文件用于生成完整的文件树
+        # 获取根目录项
         root_item = self.file_tree.topLevelItem(0)
-        all_files = self.get_all_files(root_item)
-        selected_files = self.get_selected_files(root_item)
-
-        if not selected_files:
+        root_path = root_item.path
+        
+        # 根据开关状态决定使用哪种方式获取文件
+        if self.show_complete_tree:
+            files_for_structure = self.get_all_files(root_item)
+        else:
+            files_for_structure = self.get_selected_files(root_item)
+            
+        if not files_for_structure:
             self.alert("提示", "没有选择任何文件。")
             return
 
-        root_path = root_item.path
-        # 使用所有文件生成完整的文件树结构
-        complete_file_structure = generate_file_structure(all_files, root_path)
-        structure_output = print_tree_structure(complete_file_structure)
+        # 生成文件树结构
+        file_structure = generate_file_structure(files_for_structure, root_path)
+        structure_output = print_tree_structure(file_structure)
 
         # 只为选中的文件生成内容
+        selected_files = self.get_selected_files(root_item)
         selected_file_structure = generate_file_structure(selected_files, root_path)
         content_output = generate_files_content(selected_file_structure, root_path)
 
