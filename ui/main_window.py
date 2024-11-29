@@ -265,20 +265,39 @@ class FileMergeApp(QMainWindow):
             files.extend(self.get_selected_files(child))
         return files
 
+    def get_all_files(self, item):
+        """获取项目中的所有文件列表"""
+        files = []
+        if item.path.is_file():
+            files.append(item.path)
+        for i in range(item.childCount()):
+            child = item.child(i)
+            files.extend(self.get_all_files(child))
+        return files
+
     def preview_selected_files(self):
         """预览选中的文件"""
         if not self.file_tree.topLevelItem(0):
             self.alert("提示", "没有选择项目根目录。")
             return
-        selected_files = self.get_selected_files(self.file_tree.topLevelItem(0))
+        
+        # 获取所有文件用于生成完整的文件树
+        root_item = self.file_tree.topLevelItem(0)
+        all_files = self.get_all_files(root_item)
+        selected_files = self.get_selected_files(root_item)
+        
         if not selected_files:
             self.alert("提示", "没有选择任何文件。")
             return
 
-        root_path = self.file_tree.topLevelItem(0).path
-        file_structure = generate_file_structure(selected_files, root_path)
-        structure_output = print_tree_structure(file_structure)
-        content_output = generate_files_content(file_structure, root_path)
+        root_path = root_item.path
+        # 使用所有文件生成完整的文件树结构
+        complete_file_structure = generate_file_structure(all_files, root_path)
+        structure_output = print_tree_structure(complete_file_structure)
+        
+        # 只为选中的文件生成内容
+        selected_file_structure = generate_file_structure(selected_files, root_path)
+        content_output = generate_files_content(selected_file_structure, root_path)
 
         self.preview_text.setPlainText(
             f"项目结构：\n\n{structure_output}\n---\n\n{content_output}"
