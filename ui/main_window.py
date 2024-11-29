@@ -108,7 +108,7 @@ class FileMergeApp(QMainWindow):
         content_layout = QHBoxLayout()
 
         self.file_tree = QTreeWidget()
-        self.file_tree.setHeaderLabel("项目文件")
+        self.file_tree.setHeaderLabel("请选择要输出内容的文件：")
         self.file_tree.itemChanged.connect(self.handle_item_changed)
         content_layout.addWidget(self.file_tree)
 
