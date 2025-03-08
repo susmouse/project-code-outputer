@@ -53,7 +53,7 @@ class FileMergeApp(QMainWindow):
         super().__init__()
         self.setWindowTitle("项目文件输出工具")
         self.setGeometry(100, 100, 1000, 800)
-        self.show_complete_tree = False  // 控制是否显示完整文件树的标志位
+        self.show_complete_tree = False  # 控制是否显示完整文件树的标志位
         self.initUI()
 
     def initUI(self):
