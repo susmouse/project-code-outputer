@@ -17,13 +17,9 @@ except (FileNotFoundError, json.JSONDecodeError) as e:
 
 def get_language_by_extension(extension):
     """
-    根据文件扩展名返回对应的语言标识
-
-    参数:
-        extension: 文件扩展名（包含点号）
-
-    返回:
-        str: 语言标识符
+    * 根据文件扩展名返回对应的语言标识
+    * @param extension 文件扩展名（包含点号）
+    * @return str 语言标识符
     """
     type = EXTENSION_MAPPING.get(extension, "")
     # 未找到匹配的扩展名，使用扩展名本身
@@ -34,14 +30,10 @@ def get_language_by_extension(extension):
 
 def generate_file_structure(files, root_path):
     """
-    生成文件结构树
-
-    参数:
-        files: 文件路径列表
-        root_path: 项目根路径
-
-    返回:
-        dict: 文件结构树字典
+    * 生成文件结构树
+    * @param files 文件路径列表
+    * @param root_path 项目根路径
+    * @return dict 文件结构树字典
     """
     file_structure = {}
     for file in files:
@@ -56,14 +48,10 @@ def generate_file_structure(files, root_path):
 
 def print_tree_structure(tree, indent=""):
     """
-    生成树形结构的文本表示
-
-    参数:
-        tree: 文件结构树字典
-        indent: 缩进字符串
-
-    返回:
-        str: 格式化的树形结构文本
+    * 生成树形结构的文本表示
+    * @param tree 文件结构树字典
+    * @param indent 缩进字符串
+    * @return str 格式化的树形结构文本
     """
     content = ""
     for i, (key, value) in enumerate(tree.items()):
@@ -80,15 +68,11 @@ def print_tree_structure(tree, indent=""):
 
 def generate_files_content(tree, root_path, path=""):
     """
-    生成文件内容的文本表示
-
-    参数:
-        tree: 文件结构树字典
-        root_path: 项目根路径
-        path: 当前路径
-
-    返回:
-        str: 格式化的文件内容文本
+    * 生成文件内容的文本表示
+    * @param tree 文件结构树字典
+    * @param root_path 项目根路径
+    * @param path 当前路径
+    * @return str 格式化的文件内容文本
     """
     content = ""
     for key, value in tree.items():

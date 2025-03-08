@@ -48,12 +48,8 @@ class FileTreeItem(QTreeWidgetItem):
     @staticmethod
     def sort_key(p):
         """
-        文件排序键函数
-
-        参数:
-            p: Path对象
-
-        返回:
-            tuple: (是否为文件, 小写文件名)，用于确保目录排在文件前面
+        * 文件排序键函数
+        * @param p Path对象
+        * @return tuple (是否为文件, 小写文件名)，用于确保目录排在文件前面
         """
         return (p.is_file(), p.name.lower())

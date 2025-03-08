@@ -46,15 +46,21 @@ class FileMergeApp(QMainWindow):
     """
 
     def __init__(self):
-        """初始化主窗口"""
+        """
+        * 初始化主窗口
+        * 设置窗口标题、大小和初始化变量
+        """
         super().__init__()
         self.setWindowTitle("项目文件输出工具")
         self.setGeometry(100, 100, 1000, 800)
-        self.show_complete_tree = False  # 添加开关状态变量
+        self.show_complete_tree = False  // 控制是否显示完整文件树的标志位
         self.initUI()
 
     def initUI(self):
-        """初始化用户界面"""
+        """
+        * 初始化用户界面
+        * 设置项目选择器、文件树、预览区域和导出按钮
+        """
         main_layout = QVBoxLayout()
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
@@ -66,7 +72,10 @@ class FileMergeApp(QMainWindow):
         self.apply_styles()
 
     def setup_project_selector(self, layout):
-        """设置项目选择器部分"""
+        """
+        * 设置项目选择器部分
+        * @param layout 父布局对象
+        """
         button_layout = QHBoxLayout()
         browse_button = QPushButton("选择项目根目录", self)
         browse_button.clicked.connect(self.browse_project)
@@ -84,7 +93,10 @@ class FileMergeApp(QMainWindow):
         layout.addLayout(button_layout)
 
     def setup_file_tree_and_preview(self, layout):
-        """设置文件树和预览区域"""
+        """
+        * 设置文件树和预览区域
+        * @param layout 父布局对象
+        """
         content_layout = QHBoxLayout()
 
         self.file_tree = QTreeWidget()
@@ -103,7 +115,10 @@ class FileMergeApp(QMainWindow):
         layout.addLayout(content_layout)
 
     def setup_export_buttons(self, layout):
-        """设置导出按钮"""
+        """
+        * 设置导出按钮
+        * @param layout 父布局对象
+        """
         button_layout = QHBoxLayout()
 
         preview_button = QPushButton("预览", self)
@@ -121,7 +136,10 @@ class FileMergeApp(QMainWindow):
         layout.addLayout(button_layout)
 
     def apply_styles(self):
-        """应用界面样式"""
+        """
+        * 应用界面样式
+        * 从style.css文件中读取样式并应用到窗口
+        """
 
         # 读取当前目录下`style.css`文件的内容
         with open("ui/style.css", "r", encoding="utf-8") as file:
