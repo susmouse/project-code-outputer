@@ -28,6 +28,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QMessageBox,
     QCheckBox,
+    QApplication,
 )
 from PyQt5.QtCore import Qt
 
