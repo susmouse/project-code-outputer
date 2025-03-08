@@ -52,7 +52,8 @@ class FileMergeApp(QMainWindow):
         """
         super().__init__()
         self.setWindowTitle("项目文件输出工具")
-        self.setGeometry(100, 100, 1000, 800)
+        self.setGeometry(100, 100, 1200, 900)
+        self.setMinimumSize(800, 600)
         self.show_complete_tree = False  # 控制是否显示完整文件树的标志位
         self.initUI()
 
@@ -76,21 +77,36 @@ class FileMergeApp(QMainWindow):
         * 设置项目选择器部分
         * @param layout 父布局对象
         """
-        button_layout = QHBoxLayout()
+        # 项目选择器部分
+        project_layout = QVBoxLayout()
+        project_layout.setSpacing(8)
+        
+        # 标题
+        title_label = QLabel("项目文件输出工具")
+        title_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #333;")
+        project_layout.addWidget(title_label)
+        
+        # 操作区域
+        action_layout = QHBoxLayout()
+        action_layout.setSpacing(8)
+        
         browse_button = QPushButton("选择项目根目录", self)
+        browse_button.setIcon(QApplication.style().standardIcon(QApplication.style().SP_DirOpenIcon))
         browse_button.clicked.connect(self.browse_project)
-        button_layout.addWidget(browse_button)
+        action_layout.addWidget(browse_button)
 
         self.project_label = QLabel("未选择项目根目录")
-        button_layout.addWidget(self.project_label)
+        self.project_label.setStyleSheet("color: #666;")
+        action_layout.addWidget(self.project_label)
 
         # 添加显示完整树的复选框
         self.complete_tree_checkbox = QCheckBox("显示完整文件树", self)
         self.complete_tree_checkbox.setChecked(self.show_complete_tree)
         self.complete_tree_checkbox.stateChanged.connect(self.toggle_tree_mode)
-        button_layout.addWidget(self.complete_tree_checkbox)
+        action_layout.addWidget(self.complete_tree_checkbox)
 
-        layout.addLayout(button_layout)
+        project_layout.addLayout(action_layout)
+        layout.addLayout(project_layout)
 
     def setup_file_tree_and_preview(self, layout):
         """
@@ -98,20 +114,35 @@ class FileMergeApp(QMainWindow):
         * @param layout 父布局对象
         """
         content_layout = QHBoxLayout()
+        content_layout.setSpacing(16)
 
+        # 文件树部分
+        tree_container = QVBoxLayout()
+        tree_label = QLabel("项目文件结构")
+        tree_label.setStyleSheet("font-weight: bold; color: #333;")
+        tree_container.addWidget(tree_label)
+        
         self.file_tree = QTreeWidget()
-        self.file_tree.setHeaderLabel("请选择要输出内容的文件：")
+        self.file_tree.setHeaderLabel("请选择要输出内容的文件")
+        self.file_tree.setStyleSheet("QHeaderView::section { background-color: #f0f2f5; }")
         self.file_tree.itemChanged.connect(self.handle_item_changed)
-        content_layout.addWidget(self.file_tree)
+        tree_container.addWidget(self.file_tree)
+        content_layout.addLayout(tree_container)
 
-        preview_layout = QVBoxLayout()
-        preview_label = QLabel("预览")
+        # 预览部分
+        preview_container = QVBoxLayout()
+        preview_label = QLabel("文件内容预览")
+        preview_label.setStyleSheet("font-weight: bold; color: #333;")
+        preview_container.addWidget(preview_label)
+        
         self.preview_text = QTextEdit()
         self.preview_text.setReadOnly(True)
-        preview_layout.addWidget(preview_label)
-        preview_layout.addWidget(self.preview_text)
+        preview_container.addWidget(self.preview_text)
+        content_layout.addLayout(preview_container)
 
-        content_layout.addLayout(preview_layout)
+        # 设置比例
+        content_layout.setStretch(0, 1)
+        content_layout.setStretch(1, 2)
         layout.addLayout(content_layout)
 
     def setup_export_buttons(self, layout):
@@ -119,17 +150,22 @@ class FileMergeApp(QMainWindow):
         * 设置导出按钮
         * @param layout 父布局对象
         """
+        # 操作按钮区域
         button_layout = QHBoxLayout()
-
+        button_layout.setSpacing(8)
+        
         preview_button = QPushButton("预览", self)
+        preview_button.setIcon(QApplication.style().standardIcon(QApplication.style().SP_FileDialogContentsView))
         preview_button.clicked.connect(self.preview_selected_files)
         button_layout.addWidget(preview_button)
 
         export_txt_button = QPushButton("导出TXT", self)
+        export_txt_button.setIcon(QApplication.style().standardIcon(QApplication.style().SP_DialogSaveButton))
         export_txt_button.clicked.connect(lambda: self.export_files("txt"))
         button_layout.addWidget(export_txt_button)
 
         export_md_button = QPushButton("导出MD", self)
+        export_md_button.setIcon(QApplication.style().standardIcon(QApplication.style().SP_DialogSaveButton))
         export_md_button.clicked.connect(lambda: self.export_files("md"))
         button_layout.addWidget(export_md_button)
 
