@@ -166,6 +166,8 @@ class TreeGeneratorWorker(QThread):
     def run(self):
         try:
             generator = FileTreeTextGenerator(self.options)
+            # 设置进度回调
+            generator.progress_callback = self.progress.emit
             tree = generator.generate(self.path)
             self.finished.emit(tree)
         except Exception as e:
