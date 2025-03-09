@@ -1,2 +1,2 @@
-pythonw "./app.py"
+pythonw main.py
 exit
