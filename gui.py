@@ -121,7 +121,8 @@ class TreeGeneratorGUI(QMainWindow):
             'trailing_slash': self.trailing_slash_check.isChecked(),
             'ascii': self.ascii_check.isChecked(),
             'use_gitignore': self.ignore_gitignore_check.isChecked(),
-            'regex_filter': self.regex_input.text().strip() or None
+            'regex_filter': self.regex_input.text().strip() or None,
+            'show_content': self.show_content_check.isChecked()
         }
         
         generator = FileTreeTextGenerator(options)

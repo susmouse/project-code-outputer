@@ -120,7 +120,10 @@ class FileTreeTextGenerator:
     def __init__(self, options: Dict[str, Any]):
         self.options = {**DEFAULT_OPTIONS, **options}
         self.ignore_patterns = []
-        self._gitignore_cache = {}  # 添加缓存
+        self._gitignore_cache = {}
+        # 确保show_content选项被正确传递
+        if 'show_content' not in self.options:
+            self.options['show_content'] = False
 
     def _load_gitignore(self, path: Path):
         """递归加载.gitignore文件中的忽略规则，带缓存"""
