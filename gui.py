@@ -28,7 +28,7 @@ class TreeGeneratorGUI(QMainWindow):
         regex_layout = QHBoxLayout()
         regex_layout.addWidget(QLabel("正则过滤:"))
         self.regex_input = QLineEdit()
-        self.regex_input.setPlaceholderText("输入正则表达式，匹配的文件将不显示")
+        self.regex_input.setPlaceholderText("输入正则表达式过滤不需要的文件，如\"file1|file2\"")
         regex_layout.addWidget(self.regex_input)
         layout.addLayout(regex_layout)
         
@@ -52,7 +52,7 @@ class TreeGeneratorGUI(QMainWindow):
         self.trailing_slash_check = QCheckBox("目录添加斜杠")
         self.trailing_slash_check.setChecked(True)
         self.ascii_check = QCheckBox("使用ASCII字符")
-        self.show_content_check = QCheckBox("显示文件内容")
+        self.show_content_check = QCheckBox("输出文件内容(性能消耗很大)")
         col2.addWidget(self.reverse_check)
         col2.addWidget(self.trailing_slash_check)
         col2.addWidget(self.ascii_check)
@@ -60,7 +60,7 @@ class TreeGeneratorGUI(QMainWindow):
         
         # 第三列
         col3 = QVBoxLayout()
-        self.ignore_gitignore_check = QCheckBox("使用.gitignore")
+        self.ignore_gitignore_check = QCheckBox("使用.gitignore(性能消耗大)")
         self.ignore_gitignore_check.setChecked(True)
         self.max_depth_label = QLabel("最大深度:")
         self.max_depth_spin = QSpinBox()
