@@ -66,6 +66,7 @@ class TreeGeneratorGUI(QMainWindow):
         self.max_depth_spin.setValue(10)
         col3.addWidget(self.ascii_check)
         col3.addWidget(self.ignore_gitignore_check)
+        col3.addWidget(self.show_content_check)
         col3.addWidget(self.max_depth_label)
         col3.addWidget(self.max_depth_spin)
         
