@@ -79,49 +79,28 @@ class FileTreeTextGenerator:
         if self.options.get('use_gitignore', True):
             self._load_gitignore(path)
         
-        tree_lines = self._print(path.name, path, 0, '', self.options)
+        # 在生成目录树时同时收集文件路径
+        files = []
+        tree_lines = self._print(path.name, path, 0, '', self.options, files)
         result = '\n'.join(tree_lines)
         
-        if self.options.get('show_content', False):
-            # 收集所有文件路径
-            files = []
-            self._collect_files(path, files, self.options)
-            
-            # 添加文件内容
-            if files:
-                result += "\n\n---\n\n"
-                total_files = len(files)
-                for i, file_path in enumerate(files):
-                    relative_path = file_path.relative_to(path)
-                    extension = file_path.suffix.lstrip('.') or 'text'
-                    content = self._get_file_content(file_path)
-                    
-                    result += f"**{relative_path}**\n\n```{extension}\n{content}\n```\n\n---\n\n"
-                    
-                    # 更新进度
-                    if hasattr(self, 'progress_callback'):
-                        progress = int((i + 1) / total_files * 100)
-                        self.progress_callback(progress)
+        if self.options.get('show_content', False) and files:
+            result += "\n\n---\n\n"
+            total_files = len(files)
+            for i, file_path in enumerate(files):
+                relative_path = file_path.relative_to(path)
+                extension = file_path.suffix.lstrip('.') or 'text'
+                content = self._get_file_content(file_path)
+                
+                result += f"**{relative_path}**\n\n```{extension}\n{content}\n```\n\n---\n\n"
+                
+                # 更新进度
+                if hasattr(self, 'progress_callback'):
+                    progress = int((i + 1) / total_files * 100)
+                    self.progress_callback(progress)
         
         return result
 
-    def _collect_files(self, path: Path, files: list, options: Dict[str, Any]):
-        """递归收集所有符合条件的文件路径"""
-        if path.is_file():
-            if not is_path_excluded(path, EXCLUDED_PATTERNS + options['exclude'], self.ignore_patterns):
-                files.append(path)
-            return
-        
-        if path.is_dir():
-            try:
-                contents = sort_contents(os.listdir(path), path, options)
-                if not options['all_files']:
-                    contents = [c for c in contents if not self._is_hidden(c)]
-                
-                for content in contents:
-                    self._collect_files(path / content, files, options)
-            except (PermissionError, FileNotFoundError):
-                pass
 
     def __init__(self, options: Dict[str, Any]):
         self.options = {**DEFAULT_OPTIONS, **options}
@@ -182,7 +161,7 @@ class FileTreeTextGenerator:
         """
         return filename.startswith('.')
 
-    def _print(self, filename: str, path: Path, current_depth: int, preceding_symbols: str, options: Dict[str, Any], is_last: bool = False) -> List[str]:
+    def _print(self, filename: str, path: Path, current_depth: int, preceding_symbols: str, options: Dict[str, Any], files: List[Path] = None, is_last: bool = False) -> List[str]:
         is_dir = path.is_dir()
         is_file = not is_dir
 
@@ -217,6 +196,9 @@ class FileTreeTextGenerator:
         lines.append(''.join(line))
 
         if is_file:
+            # 如果是文件且需要显示内容，收集路径
+            if files is not None and options.get('show_content', False):
+                files.append(path)
             return lines
 
         # 获取并排序目录内容
@@ -245,6 +227,7 @@ class FileTreeTextGenerator:
                 current_depth + 1,
                 preceding_symbols + (symbols['INDENT'] if is_last else symbols['VERTICAL']),
                 options,
+                files,
                 is_current_last
             )
             lines.extend(new_lines)
