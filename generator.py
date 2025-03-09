@@ -54,11 +54,68 @@ class FileTreeTextGenerator:
         self.options = {**DEFAULT_OPTIONS, **options}
         self.ignore_patterns = []
 
+    def _is_binary(self, path: Path) -> bool:
+        """检查文件是否是二进制文件"""
+        try:
+            with open(path, 'rb') as f:
+                return b'\x00' in f.read(1024)
+        except:
+            return True
+
+    def _get_file_content(self, path: Path) -> str:
+        """获取文件内容，如果是二进制文件则返回提示"""
+        if self._is_binary(path):
+            return f"{path} 可能是二进制文件，无法输出内容"
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except UnicodeDecodeError:
+            return f"{path} 可能是二进制文件，无法输出内容"
+        except Exception as e:
+            return f"无法读取文件内容: {str(e)}"
+
     def generate(self, path: str) -> str:
         path = Path(path)
         if self.options.get('use_gitignore', True):
             self._load_gitignore(path)
-        return '\n'.join(self._print(path.name, path, 0, '', self.options))
+        
+        tree_lines = self._print(path.name, path, 0, '', self.options)
+        result = '\n'.join(tree_lines)
+        
+        if self.options.get('show_content', False):
+            # 收集所有文件路径
+            files = []
+            self._collect_files(path, files, self.options)
+            
+            # 添加文件内容
+            if files:
+                result += "\n\n---\n\n"
+                for file_path in files:
+                    relative_path = file_path.relative_to(path)
+                    extension = file_path.suffix.lstrip('.') or 'text'
+                    content = self._get_file_content(file_path)
+                    
+                    result += f"**{relative_path}**\n\n```{extension}\n{content}\n```\n\n---\n\n"
+        
+        return result
+
+    def _collect_files(self, path: Path, files: list, options: Dict[str, Any]):
+        """递归收集所有符合条件的文件路径"""
+        if path.is_file():
+            if not is_path_excluded(path, EXCLUDED_PATTERNS + options['exclude'], self.ignore_patterns):
+                files.append(path)
+            return
+        
+        if path.is_dir():
+            try:
+                contents = sort_contents(os.listdir(path), path, options)
+                if not options['all_files']:
+                    contents = [c for c in contents if not self._is_hidden(c)]
+                
+                for content in contents:
+                    self._collect_files(path / content, files, options)
+            except (PermissionError, FileNotFoundError):
+                pass
 
     def __init__(self, options: Dict[str, Any]):
         self.options = {**DEFAULT_OPTIONS, **options}

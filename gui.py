@@ -59,6 +59,7 @@ class TreeGeneratorGUI(QMainWindow):
         self.ascii_check = QCheckBox("使用ASCII字符")
         self.ignore_gitignore_check = QCheckBox("使用.gitignore")
         self.ignore_gitignore_check.setChecked(True)
+        self.show_content_check = QCheckBox("显示文件内容")
         self.max_depth_label = QLabel("最大深度:")
         self.max_depth_spin = QSpinBox()
         self.max_depth_spin.setRange(1, 100)
