@@ -90,12 +90,18 @@ class FileTreeTextGenerator:
             # 添加文件内容
             if files:
                 result += "\n\n---\n\n"
-                for file_path in files:
+                total_files = len(files)
+                for i, file_path in enumerate(files):
                     relative_path = file_path.relative_to(path)
                     extension = file_path.suffix.lstrip('.') or 'text'
                     content = self._get_file_content(file_path)
                     
                     result += f"**{relative_path}**\n\n```{extension}\n{content}\n```\n\n---\n\n"
+                    
+                    # 更新进度
+                    if hasattr(self, 'progress_callback'):
+                        progress = int((i + 1) / total_files * 100)
+                        self.progress_callback(progress)
         
         return result
 

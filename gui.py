@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                             QLabel, QLineEdit, QPushButton, QCheckBox, QSpinBox, QTextEdit,
-                            QFileDialog)
-from PyQt5.QtCore import Qt
+                            QFileDialog, QProgressBar)
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from generator import FileTreeTextGenerator
 
 class TreeGeneratorGUI(QMainWindow):
@@ -75,6 +75,13 @@ class TreeGeneratorGUI(QMainWindow):
         options_layout.addLayout(col3)
         layout.addLayout(options_layout)
         
+        # 进度条
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setMinimum(0)
+        self.progress_bar.setMaximum(100)
+        self.progress_bar.setVisible(False)
+        layout.addWidget(self.progress_bar)
+
         # 按钮布局
         button_layout = QHBoxLayout()
         self.generate_button = QPushButton("生成目录树")
@@ -125,12 +132,44 @@ class TreeGeneratorGUI(QMainWindow):
             'show_content': self.show_content_check.isChecked()
         }
         
-        generator = FileTreeTextGenerator(options)
+        # 禁用按钮
+        self.generate_button.setEnabled(False)
+        self.copy_button.setEnabled(False)
+        self.progress_bar.setVisible(True)
+        
+        # 创建并启动工作线程
+        self.worker = TreeGeneratorWorker(path, options)
+        self.worker.progress.connect(self.progress_bar.setValue)
+        self.worker.finished.connect(self.on_tree_generated)
+        self.worker.start()
+
+    def on_tree_generated(self, result):
+        # 恢复按钮状态
+        self.generate_button.setEnabled(True)
+        self.copy_button.setEnabled(True)
+        self.progress_bar.setVisible(False)
+        
+        if isinstance(result, Exception):
+            self.result_text.setPlainText(f"错误: {str(result)}")
+        else:
+            self.result_text.setPlainText(result)
+
+class TreeGeneratorWorker(QThread):
+    progress = pyqtSignal(int)
+    finished = pyqtSignal(object)
+
+    def __init__(self, path, options):
+        super().__init__()
+        self.path = path
+        self.options = options
+
+    def run(self):
         try:
-            tree = generator.generate(path)
-            self.result_text.setPlainText(tree)
+            generator = FileTreeTextGenerator(self.options)
+            tree = generator.generate(self.path)
+            self.finished.emit(tree)
         except Exception as e:
-            self.result_text.setPlainText(f"错误: {str(e)}")
+            self.finished.emit(e)
 
 if __name__ == '__main__':
     app = QApplication([])
